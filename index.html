@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: rgb(172, 240, 215);
+            display: flex;
+            justify-content: center; /* Horizontally center content */
+            align-items: center; /* Vertically center content */
+            height: 100vh; /* Make body take up full viewport height */
+            margin: 0; /* Remove default margin */
+        }
+
+        .stopwatch-container {
+            width: 300px; /* Set width of stopwatch container */
+        }
+
+        .display {
+            font-size: 55px; /* Increase the font size for the stopwatch display */
+            margin-bottom: 20px;
+            color: rgb(100, 42, 226); /* Change text color to white */
+        }
+
+        .controls button {
+            margin: 5px;
+            padding: 12px 20px; /* Increase padding for buttons */
+            font-size: 1.5em; /* Increase font size for buttons */
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.5); /* Add background color with transparency */
+            border: none;
+            border-radius: 5px;
+            color: #333; /* Change text color for buttons */
+        }
+
+        .controls button:hover {
+            background-color: rgba(255, 255, 255, 0.7); /* Lighten background color on hover */
+        }
+
+        .laps {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .laps li {
+            margin-bottom: 5px;
+            color: rgb(229, 12, 12); /* Change text color to white for lap list */
+            font-family: sans-serif;
+            font-size: 30px;
+        }
+        h6{
+            font-size: 50px;
+            
+        }
+    </style>
+</head>
+<body>
+ 
+    <div class="stopwatch-container">
+        <h6>Stopwatch</h6>
+        <div class="display" id="display">00:00:00</div>
+        <div class="controls">
+            <button id="startBtn" onclick="startStopwatch()">Start</button>
+            <button id="pauseBtn" onclick="pauseStopwatch()" disabled>Pause</button>
+            <button id="resetBtn" onclick="resetStopwatch()">Reset</button>
+            <button id="lapBtn" onclick="recordLap()">Lap</button>
+        </div>
+        <ul class="laps" id="lapsList"></ul>
+    </div>
+
+    <script>
+        let timer;
+        let startTime;
+        let elapsedTime = 0;
+        let laps = [];
+        let isRunning = false;
+
+        function startStopwatch() {
+            if (!isRunning) {
+                isRunning = true;
+                startTime = Date.now() - elapsedTime;
+                timer = setInterval(updateTime, 10);
+                document.getElementById("startBtn").textContent = "Pause";
+                document.getElementById("pauseBtn").disabled = false;
+            } else {
+                isRunning = false;
+                clearInterval(timer);
+                document.getElementById("startBtn").textContent = "Resume";
+            }
+        }
+
+        function pauseStopwatch() {
+            startStopwatch();
+        }
+
+        function resetStopwatch() {
+            clearInterval(timer);
+            isRunning = false;
+            elapsedTime = 0;
+            document.getElementById("startBtn").textContent = "Start";
+            document.getElementById("pauseBtn").disabled = true;
+            document.getElementById("display").textContent = "00:00:00";
+            document.getElementById("lapsList").innerHTML = "";
+            laps = [];
+        }
+
+        function updateTime() {
+            elapsedTime = Date.now() - startTime;
+            displayTime(elapsedTime);
+        }
+
+        function displayTime(time) {
+            let minutes = Math.floor(time / 60000);
+            let seconds = Math.floor((time % 60000) / 1000);
+            let milliseconds = Math.floor((time % 1000) / 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            milliseconds = milliseconds < 10 ? "0" + milliseconds : milliseconds;
+
+            document.getElementById("display").textContent = minutes + ":" + seconds + ":" + milliseconds;
+        }
+
+        function recordLap() {
+            laps.push(document.getElementById("display").textContent);
+            let lapItem = document.createElement("li");
+            lapItem.textContent = "Lap " + laps.length + ": " + laps[laps.length - 1];
+            document.getElementById("lapsList").appendChild(lapItem);
+        }
+    </script>
+</body>
+</html>
